@@ -4,6 +4,8 @@
 #include <iostream>
 using namespace std;
 
+enum request_t {next, prev, first, last, data};
+
 //Assumption: List will be used with a pointer
 class List {
 	private:
@@ -22,20 +24,42 @@ class List {
 			this->data = NULL;
 		}
 
-		List* get_next() {
-			return this->next;
+		void request_setter(enum request_t type, List* list = NULL, string* data = NULL) {
+			switch(type) {
+				case 0:
+					this->next = list;
+				case 1:
+					this->prev = list;
+				case 2:
+					this->first = list;
+				case 3:
+					this->last = list;
+				case 4:
+					this->data = data;
+
+				default:
+					break;
+			}
 		}
 
-		List* get_prev() {
-			return this->prev;
+		List* request_getter(enum request_t type) {
+			switch(type) {
+				case 0:
+					return this->next;
+				case 1:
+					return this->prev;
+				case 2:
+					return this->first;
+				case 3:
+					return this->last;
+
+				default:
+					return NULL;
+			} 
 		}
 
-		List* get_first() {
-			return this->first;
-		}
-
-		List* get_last() {
-			return this->last;
+		string* get_data() {
+			return this->data;
 		}
 
 		void print_data() {
@@ -50,6 +74,17 @@ class List {
 
 int main(int argc, char* argv[]) {
 	cout << "program begein" << endl;
+
+	List* firstClass = new List;
+	List* secondClass = new List;
+	enum request_t type = request_t::next;
+	enum request_t type2 = request_t::next;
+	firstClass->request_setter(type2, secondClass);
+
+	
+	if(firstClass->request_getter(type) == NULL) {
+		cout << "wrong" << endl;
+	}
 
 
 
