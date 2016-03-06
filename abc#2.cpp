@@ -197,8 +197,8 @@ int main(int argc, char* argv[]) {
 
 	/* Box declarations */
 	//enum request_t_2 type3 = request_t_2::area;
-	Box* firstBox = new Box(5,10);
-	Box* secondBox = new Box(5,5);
+	Box* first_Box = new Box(5,10);
+	Box* second_Box = new Box(5,5);
 
 	/* producing 50 lists to connect */
 	List* first = NULL;
@@ -233,12 +233,32 @@ int main(int argc, char* argv[]) {
 	}
 
 	/* producing 50 boxes to connect */
-	Box* first = NULL;
-	Box* last  = NULL;
-	Box* prev  = NULL;
+	Box* firstBox = NULL;
+	Box* lastBox  = NULL;
+	Box* prevBox  = NULL;
 
-	int initial_width = 5;
-	int initial_length = 1;
+	int initial_width = 1;
+	int initial_length = 10;
+
+	for (int i=0; i<50; i++) {
+		Box* randomBox = new Box(initial_width, initial_length);
+
+		if (i==0) { firstBox = randomBox; }
+		else if(i==49) { lastBox = randomBox; }
+
+		randomBox->request_setter(type7, firstBox);
+		randomBox->request_setter(type8, lastBox);
+
+		if (prevBox != NULL) {
+			randomBox->request_setter(type5, prevBox);
+			prevBox->request_setter(type6, randomBox);
+		}
+
+		prevBox = randomBox;
+		initial_width += 4;
+		initial_length += 2;
+	}
+
 
 	/* checking area */
 
@@ -250,6 +270,8 @@ int main(int argc, char* argv[]) {
 
 	if(first == last)
 		first->print_data();
+
+	//checking 50 Boxes designed with class (all linked)
 
 
 	cout << "program terminated" << endl;
