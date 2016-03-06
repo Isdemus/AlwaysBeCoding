@@ -27,6 +27,10 @@ class List {
 			this->data  = NULL;
 		}
 
+		List* next_getter() {
+			return this->next;
+		}
+
 		void request_setter(enum request_t type, List* list = NULL, string* data = NULL) {
 			switch(type) {
 				case 0:
@@ -210,6 +214,8 @@ int main(int argc, char* argv[]) {
 	enum request_t type6 = request_t::next;
 	enum request_t type7 = request_t::first;
 	enum request_t type8 = request_t::last;
+	enum request_t_2 type9 = request_t_2::area;
+
 
 	for (int i=0; i<50; i++) {
 		string* str = new string();
@@ -268,11 +274,20 @@ int main(int argc, char* argv[]) {
 		first = first->request_getter(type6);
 	}
 
-	if(first == last)
+	if (first == last)
 		first->print_data();
 
 	//checking 50 Boxes designed with class (all linked)
+	while (firstBox != lastBox) {
+		int area = firstBox->request_getter(type9);
+		cout << "area: " << area << endl;
+		firstBox = (Box*) firstBox->next_getter();
+	}
 
+	if (firstBox == lastBox) {
+		int area = firstBox->request_getter(type9);
+		cout << "area: " << area << endl;
+	}
 
 	cout << "program terminated" << endl;
 
