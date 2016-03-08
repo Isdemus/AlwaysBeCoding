@@ -25,6 +25,32 @@ class Solution {
         }
         */
 
+        void print_vector(vector<int>* nums) {
+            cout << "\nBegin Priting Vector" << endl;
+            /*
+            for (int i=0; i<nums->size(); i++) {
+                cout << nums->at(i) << endl;
+            }
+            */
+            //using iterator version
+            for (vector<int>::iterator it=nums->begin(); it != nums->end(); ++it) {
+                cout << *it << endl;
+            }
+
+            
+            cout << "Finished Printing Vector\n" << endl;
+        }
+
+        int find_linear_search(vector<int>* nums, int target, int start_position, int size) {
+            for (int i=start_position; i<size; i++) {
+                if (nums->at(i) == target) {
+                    return i;
+                }
+            }
+
+            return -1; // this shouldn't happen
+        }
+
         int find_binary_search(vector<int>* nums, int target, int min_position, int max_position) {
             int middle = (min_position+max_position)/2;
             int result = nums->at(middle);
@@ -60,12 +86,17 @@ class Solution {
             
             //better way: sort the array (n log n) + using binary search to find if there is a desired pair
             //merge_sorting(nums);
-            std::sort(nums->begin(), nums->end());
+            vector<int>* copied_nums = new vector<int>(*nums);
+            std::sort(copied_nums->begin(), copied_nums->end());
             for (int i=0; i<SIZE; i++) {
                 this->found = false;
                 int integer_to_find = target-nums->at(i);
-                int answer_element = find_binary_search(nums, integer_to_find, i, SIZE);
+                int answer_element_entity = find_binary_search(copied_nums, integer_to_find, i, SIZE);
+                
                 if (this->found) {
+                    int answer_to_find = copied_nums->at(answer_element_entity);
+                    int answer_element = find_linear_search(nums, answer_to_find, i, SIZE);
+
                     answer->push_back(i);
                     answer->push_back(answer_element);
                     
@@ -73,25 +104,24 @@ class Solution {
                 }
             }
             
-            return answer; //answer is an empty vector in this case
+            return answer; //answer is an empty vector in this case (this shouldn't happen)
         }
 };
 
 int main(int argc, char* argv[]) {
     cout << "Program Begin\n" << endl;
-    vector<int>* testing_vector = new vector<int>();
-    testing_vector->push_back(5);
-    testing_vector->push_back(2);
-    testing_vector->push_back(1);
+    int input_list [] = {1, 5, 2};
+    vector<int>* testing_vector = new vector<int>(input_list, input_list + sizeof(input_list) / sizeof(int));
+
     int target = 3;
 
     Solution* sol = new Solution();
 
     vector<int>* answer = sol->twoSum(testing_vector, target);
-    for(int i=0; i<answer->size(); i++) {
-        cout << answer->at(i) << " ";
-    }
-    
+    //sol->print_vector(testing_vector);
+    cout << "Answer: ";
+    sol->print_vector(answer);
+
     free(testing_vector);
     free(answer);
     free(sol);
