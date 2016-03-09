@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <unordered_map>
 #include <vector>
 using namespace std;
 
@@ -20,13 +21,18 @@ class Solution {
             }
         }
         
-        void merge_sorting(vector<int>& nums) {
+        void merge_sorting(vector<int>& nutms) {
             
         }
         */
 
         void print_vector(vector<int>* nums) {
+            if(nums != NULL) {
+
+
             cout << "\nBegin Priting Vector" << endl;
+
+
             /*
             for (int i=0; i<nums->size(); i++) {
                 cout << nums->at(i) << endl;
@@ -39,6 +45,7 @@ class Solution {
 
             
             cout << "Finished Printing Vector\n" << endl;
+            }
         }
 
         int find_linear_search(vector<int>* nums, int target, int start_position, int size) {
@@ -106,6 +113,28 @@ class Solution {
             
             return answer; //answer is an empty vector in this case (this shouldn't happen)
         }
+
+        //using hashmap (unordered set), it now has O(n) time complexity
+        vector<int>* twoSumSecond (vector<int>* nums, int target) {
+            vector<int>* answer = new vector<int>();
+            unordered_map <int, int> our_hash; //key, value, index
+
+            int SIZE = nums->size();
+            for (int i=0; i<SIZE; i++) {
+                int value = nums->at(i);
+                if (our_hash.count(value) > 0) {
+                    answer->push_back(our_hash[value]);
+                    answer->push_back(i);
+
+                    return answer;
+                } else {
+                    our_hash.insert (std::make_pair(value, i));
+                    our_hash.insert (std::make_pair(target-value, i));
+                }
+            }
+
+            return answer;
+        }
 };
 
 int main(int argc, char* argv[]) {
@@ -117,7 +146,8 @@ int main(int argc, char* argv[]) {
 
     Solution* sol = new Solution();
 
-    vector<int>* answer = sol->twoSum(testing_vector, target);
+    //vector<int>* answer = sol->twoSum(testing_vector, target);
+    vector<int>* answer = sol->twoSumSecond(testing_vector, target);
     //sol->print_vector(testing_vector);
     cout << "Answer: ";
     sol->print_vector(answer);
