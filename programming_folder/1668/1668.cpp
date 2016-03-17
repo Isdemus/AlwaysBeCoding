@@ -23,22 +23,49 @@ int making_matrices(vector< vector <int>* >* E, vector< vector <int>* >* V) {
 	return number_of_cities;
 }
 
-void deducting_process(vector<int>* path, vector< vector <int>* >* E, vector< vector <int>* >* V) {
+void deducting_process(vector<int>* path, vector< vector <int>* >* V, int min_bicycle) {
+	int path_size = path->size();
+	for (int start=0; start<path_size-1; start++) {
+		V[start][start+1] -= min_bicycle;
+	}
+}
+
+void find_path_helper(int number_of_cities, vector< vector <int>* >* E, vector< vector <int>* >* V, vector <int>& second_path, int last, int count, int min_bicycle) {
 
 }
 
 
-
-vector <int>* find_longest_path(int number_of_cities, vector< vector <int>* >* E, vector< vector <int>* >* V) {
+int find_longest_path(int number_of_cities, vector< vector <int>* >* E, vector< vector <int>* >* V, vector <int>* path) {
 	vector <int> longest_path;
 	vector <int>  second_path;
 	int max = 0;
+	int min_bicycle = -1;
+
 
 	for (int i = 0; i<number_of_cities; i++) {
-		for 
+		int last = i;
+		second_path.clear();
+
+		for (int j = 0; j<number_of_cities; j++) {
+			int count = 0;
+			if (j != last && E[i][j] > 0 && V[i][j] > 0) {
+				count += 1;
+				last = j;
+				min_bicycle = V[i][j];
+				second_path.push_back(i);
+				second_path.push_back(j);
+				count = find_path_helper(number_of_cities, E, V, second_path, last, count, min_bicycle);
+
+				if (count > max) {
+					longest_path = second_path; //Shallow copy
+				}
+			}
+		}
 	}
 
-	return &longest_path;
+	path = &longest_path;
+
+	return min_bicycle;
 }
 
 int main(int argc, char* argv[]) {
@@ -56,10 +83,11 @@ int main(int argc, char* argv[]) {
 
 		do {
 			bool finished = false;
-			vector<int>* path = find_longest_path(number_of_cities, E, V);
+			vector<int>* path = new vector<int>*();
+			int min_bicycle = find_longest_path(number_of_cities, E, V, path);
 
 			if (path->size() > 1 /* check later */) {
-				deducting_process(path, E, V);
+				deducting_process(path, V, min_bicycle);
 			}else {
 				finished = true;
 			}
