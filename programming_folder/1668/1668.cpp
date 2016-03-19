@@ -47,7 +47,7 @@ void deducting_process(vector<int>* path, vector<vector <int> > &V, int min_bicy
 
 int find_min(vector<int>* path, vector<vector <int> > &V) {
 	int SIZE = path->size();
-	int min;
+	int min = -1;
 	for (int i=0; i<SIZE-1; i++) {
 		int score = V[path->at(i)][path->at(i+1)];
 		if (min < 0) { min = score; }
@@ -59,27 +59,39 @@ int find_min(vector<int>* path, vector<vector <int> > &V) {
 	return min;
 }
 
-void find_path_helper(int number_of_cities, vector<vector <int> > &V, int last, int count, int &max,
-						vector<int> &longest_path, vector<int> &current_path, vector<int> &number_vector) {
-	for (int i = 0; i < number_of_cities; i++) {
-		int count_fake = count;
-		int SIZE = current_path.size();
-		int current = current_path[SIZE-1];
-
-		if (i == last && number_vector[current] == 1) {
-			if (count_fake > max || (count_fake == max && find_min(&longest_path, V) < find_min(&current_path, V))) {
-				max = count_fake;
-				longest_path = current_path;
-				break;
-			}
-		}else if (i != last && V[current][i] > 0) {
-			count_fake += 1;
-			last = current;
-			current_path.push_back(i);
-			find_path_helper(number_of_cities, V, last, count_fake, max, longest_path, current_path, number_vector);
-		}
+int find_sum(vector<int>* path, vector<vector <int> > &V) {
+	int sum = 0;
+	int SIZE = path->size();
+	for (int i=0; i<SIZE-1; i++) {
+		sum += V[path->at(i)][path->at(i+1)];
 	}
+
+	return sum;
 }
+
+void show_path(vector<int> longest_path) {
+	for (int i=0; i<longest_path.size(); i++) {
+		cout << longest_path[i] << " ";
+	}
+	cout << endl;
+}
+
+bool larger_min(vector<int>* longest_path, vector<int>* current_path, vector<vector <int> > &V) {
+	if (find_min(longest_path, V) <= find_min(current_path, V)) {
+		return true;
+	}
+
+	return false;
+}
+
+bool larger_sum(vector<int>* longest_path, vector<int>* current_path, vector<vector <int> > &V) {
+	if (find_sum(longest_path, V) <= find_sum(current_path, V)) {
+		return true;
+	}
+
+	return false;
+}
+
 
 bool is_subpath(vector<int> &longest_path, int element) {
 	int SIZE = longest_path.size();
@@ -92,9 +104,33 @@ bool is_subpath(vector<int> &longest_path, int element) {
 	return false;
 }
 
-void show_path(vector<int> longest_path) {
-	for (int i=0; i<longest_path.size(); i++) {
-		cout << longest_path[i] << " ";
+void find_path_helper(int number_of_cities, vector<vector <int> > &V, int count, int &max,
+						vector<int> &longest_path, vector<int> &current_path, vector<int> &number_vector) {
+	for (int i = 0; i < number_of_cities; i++) {
+		int count_fake = count;
+		int SIZE = current_path.size();
+		int current = current_path[SIZE-1];
+		int last = -1;
+		if (SIZE > 1) {
+			last = current_path[SIZE-2];
+		}else {
+			last = current_path[SIZE-1];
+		}
+
+		if (i == last && number_vector[current] == 1) {
+			if (count_fake > max || (count_fake == max && larger_min(&longest_path, &current_path, V) && larger_sum(&longest_path, &current_path, V))) {
+				max = count_fake;
+				longest_path = current_path;
+			}
+			
+			current_path.pop_back();
+			break;
+		}else if (!is_subpath(current_path, i) && V[current][i] > 0) {
+			count_fake += 1;
+			last = current;
+			current_path.push_back(i);
+			find_path_helper(number_of_cities, V, count_fake, max, longest_path, current_path, number_vector);
+		}
 	}
 }
 
@@ -126,13 +162,12 @@ int find_longest_path(int number_of_cities, vector<vector <int> > &E,
 	int max = 0;
 
 	for (int i = 0; i<number_of_cities; i++) {
-			int last = i;
 			int count = 0;
 
 			current_path.clear();
 			current_path.push_back(i);
 
-	 		find_path_helper(number_of_cities, V, last, count, max, longest_path, current_path, number_vector);
+	 		find_path_helper(number_of_cities, V, count, max, longest_path, current_path, number_vector);
 	}
 	
 	if (longest_path.size() == 0) {
@@ -146,6 +181,7 @@ int find_longest_path(int number_of_cities, vector<vector <int> > &E,
 int main(int argc, char* argv[]) {
 	int number_of_cases;	
 	cin >> number_of_cases;
+	vector<int> answer;
 
 	for (int i=0; i<number_of_cases; i++) {
 		int number_of_cities;
@@ -163,22 +199,20 @@ int main(int argc, char* argv[]) {
 		do {
 			path->clear();
 			int min_bicycle = find_longest_path(number_of_cities, E, V, path, number_vector);
-			//cout << "min_bicycle: " << min_bicycle << endl;
-
 
 			if ( min_bicycle > 0 ) {
 				deducting_process(path, V, min_bicycle);
 				number_of_bicyles += min_bicycle;
-
 			}else {
 				finished = true;
 			}
-
-			//print_matrices(E, V, number_of_cities);
 		} while ( !finished );
 
-		cout << "Case #" << i+1 << ": " << number_of_bicyles << endl;
+		answer.push_back(number_of_bicyles);
+	}
 
+	for (int m=0; m<answer.size(); m++) {
+		cout << "Case #" << m+1 << ": " << answer[m] << endl;
 	}
 
 	return 0;
