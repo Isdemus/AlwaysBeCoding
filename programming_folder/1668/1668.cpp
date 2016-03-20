@@ -37,11 +37,17 @@ vector<int> making_matrices(vector<vector <int> > &E, vector<vector <int> > &V, 
 	return number_vector;
 }
 
-void deducting_process(vector<int>* path, vector<vector <int> > &V, int min_bicycle) {
+void deducting_process(vector<int>* path, vector<vector <int> > &V, int min_bicycle, vector<int> &number_vector) {
 	int path_size = path->size();
 	for (int start=0; start<path_size-1; start++) {
+		int first = V[path->at(start)][path->at(start+1)];
 		V[path->at(start)][path->at(start+1)] -= min_bicycle;
 		V[path->at(start+1)][path->at(start)] -= min_bicycle;
+
+		if (first == 0) {
+			number_vector[start] -= 1;
+			number_vector[start+1] -= 1;
+		}
 	}
 }
 
@@ -162,12 +168,14 @@ int find_longest_path(int number_of_cities, vector<vector <int> > &E,
 	int max = 0;
 
 	for (int i = 0; i<number_of_cities; i++) {
+		if (number_vector[i] == 1) {
 			int count = 0;
 
 			current_path.clear();
 			current_path.push_back(i);
 
 	 		find_path_helper(number_of_cities, V, count, max, longest_path, current_path, number_vector);
+	 	}
 	}
 	
 	if (longest_path.size() == 0) {
@@ -176,6 +184,17 @@ int find_longest_path(int number_of_cities, vector<vector <int> > &E,
 	
 	*path = longest_path;
 	return find_min(path, V);
+}
+
+int left_over(vector<vector <int> > &V, int number_of_cities) {
+	int sum = 0;
+	for (int i=0; i<number_of_cities; i++) {
+		for (int j=0; j<number_of_cities; j++) {
+			sum += V[i][j];
+		}
+	}
+
+	return sum/2;
 }
 
 int main(int argc, char* argv[]) {
@@ -201,13 +220,14 @@ int main(int argc, char* argv[]) {
 			int min_bicycle = find_longest_path(number_of_cities, E, V, path, number_vector);
 
 			if ( min_bicycle > 0 ) {
-				deducting_process(path, V, min_bicycle);
+				deducting_process(path, V, min_bicycle, number_vector);
 				number_of_bicyles += min_bicycle;
 			}else {
 				finished = true;
 			}
 		} while ( !finished );
 
+		number_of_bicyles += left_over(V, number_of_cities);
 		answer.push_back(number_of_bicyles);
 	}
 
