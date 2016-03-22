@@ -19,15 +19,12 @@ void print_move(int x, int y, int x_2, int y_2) {
 }
 
 bool path_clear(int ori_x, int ori_y, int x, int y, vector<vector<int>* > opposite) {
-	cout << "ori_x: " << ori_x << endl;
-	cout << "ori_y: " << ori_y << endl;
-	cout << "x: " << x << endl;
-	cout << "y: " << y << endl;
 	if (ori_x == x) { //col path
 		int min_ = min(ori_y, y);
 		int max_ = max(ori_y, y);
 
 		vector<int>* vec = opposite[x];
+		if (vec == NULL) { return true; }
 
 		for (int m = min_+1; m < max_; m++) {
 			for (int k=0; k<vec->size(); k++) {
@@ -42,6 +39,8 @@ bool path_clear(int ori_x, int ori_y, int x, int y, vector<vector<int>* > opposi
 
 		for (int m = min_+1; m < max_; m++) {
 			vector<int>* vec = opposite[m];
+
+			if (vec == NULL) {return true;}
 			for (int k=0; k<vec->size(); k++) {
 				if (vec->at(k) == y) {
 					return false;
@@ -52,6 +51,7 @@ bool path_clear(int ori_x, int ori_y, int x, int y, vector<vector<int>* > opposi
 		int t=ori_y + 1;
 		for (int k=ori_x+1; k<x; k++) {
 			vector<int>* vec = opposite[k];
+			if (vec == NULL) { return true; }
 			for (int m=0; m<vec->size(); m++) {
 				if (vec->at(m) == t) {
 					return false;
@@ -59,7 +59,7 @@ bool path_clear(int ori_x, int ori_y, int x, int y, vector<vector<int>* > opposi
 			}
 			t += 1;
 		}
-		/*
+		
 	}else if (ori_x > x && ori_y > y) {
 		int t=y + 1;
 		for (int k=x+1; k<ori_x; k++) {
@@ -72,12 +72,13 @@ bool path_clear(int ori_x, int ori_y, int x, int y, vector<vector<int>* > opposi
 			}
 			t += 1;
 		}
-		*/
+		
 	}else if (ori_x > x && ori_y < y) { //clean
 		int t=y - 1;
 		for (int k=x+1; k<ori_x; k++) {
-			if (k < 0 || t < 0) {return true;}
 			vector<int>* vec = opposite[k];
+			if (vec == NULL) { return true; }
+
 			for (int m=0; m<vec->size(); m++) {
 				if (vec->at(m) == t) {
 					return false;
@@ -85,7 +86,7 @@ bool path_clear(int ori_x, int ori_y, int x, int y, vector<vector<int>* > opposi
 			}
 			t -= 1;
 		}
-		/*
+		
 	}else { // ori_x < x && ori_y > y
 		int t=ori_y - 1;
 		for (int k=ori_x+1; k<x; k++) {
@@ -100,7 +101,7 @@ bool path_clear(int ori_x, int ori_y, int x, int y, vector<vector<int>* > opposi
 			}
 			t -= 1;
 		}
-		*/
+		
 	}
 
 	return true;
@@ -116,54 +117,50 @@ bool bounded(int x, int y) {
 	return true;
 }
 
-void check_move(int x_, int y_, vector<int> array, vector<vector<int>* > opposite, string fn, bool &moved) {
+void check_move(int x_, int y_, vector<int> array, vector<vector<int>* > opposite, string fn, bool &moved, vector<int> &buffer) {
 	int x = x_;
 	int y = y_;
 	int diff = 0;
-	int index = 0;
+
 	if (fn == "row+") {
-			x += array[y];
 			diff = array[y];
+			x += diff;
 	}else if (fn == "row-") {
-			x -= array[y];
 			diff = array[y];
+			x -= diff;
 	}else if (fn == "col+") {
-			y += array[x];
-			diff = array[x];
+			diff = array[x];			
+			y += diff;
 	}else if (fn == "col-") {
-
-			y -= array[x];
 			diff = array[x];
-
+			y -= diff;
 	}else if (fn == "diaL+") {
-			index = x + y;
-			diff = array[index];
+			diff = array[x+y];
 
-			x += array[index];
-			y -= array[index];
+			x += diff;
+			y -= diff;
 	}else if (fn == "diaL-") {
-			index = x + y;
-			diff = array[index];
+			diff = array[x+y];
 
-			x -= array[index];
-			y += array[index];
+			x -= diff;
+			y += diff;
 	}else if (fn == "diaR+") {
-			index = 7 - y + x;
-			diff = array[index];
+			diff = array[7-y+x];
 
-			x += array[index];
-			y += array[index];
+			x += diff;
+			y += diff;
 	}else {
-			index = 7 - y + x;
-			diff = array[index];
+			diff = array[7-y+x];
 
-			x -= array[index];
-			y -= array[index];
+			x -= diff;
+			y -= diff;
 	}
+
+	//cout << "ori_x: " << x_ << " ori_y: " << y_ << " x: " << x << " y: " << y << endl;
 
 	if (bounded(x, y) && diff > 0 && path_clear(x, y, x_, y_, opposite)) {
 		moved = true;
-		print_move(x_, y_, x, y);
+		buffer.push_back(10 * (x+1) + (y+1));
 	}
 }
 
@@ -179,14 +176,22 @@ bool possible_move(vector<int> row_array, vector<int> col_array,
 		x = pieces[m].row;
 		y = pieces[m].col;
 
-		check_move(x, y, diagR_array, opposite, "diagR-", moved);
-		check_move(x, y, col_array, opposite, "row-", moved);
-		check_move(x, y, diagL_array, opposite, "diaL-", moved);
-		check_move(x, y, row_array, opposite, "col-", moved);
-		check_move(x, y, row_array, opposite, "col+", moved);
-		check_move(x, y, diagL_array, opposite, "diaL+", moved);
-		check_move(x, y, col_array, opposite, "row+", moved);
-		check_move(x, y, diagR_array, opposite, "diaR+", moved);
+		vector<int> buffer;
+		check_move(x, y, diagR_array, opposite, "diagR-", moved, buffer);
+		check_move(x, y, col_array, opposite, "row-", moved, buffer);
+		check_move(x, y, diagL_array, opposite, "diaL-", moved, buffer);
+		check_move(x, y, row_array, opposite, "col-", moved, buffer);
+		check_move(x, y, row_array, opposite, "col+", moved, buffer);
+		check_move(x, y, diagL_array, opposite, "diaL+", moved, buffer);
+		check_move(x, y, col_array, opposite, "row+", moved, buffer);
+		check_move(x, y, diagR_array, opposite, "diaR+", moved, buffer);
+
+		int SIZE = buffer.size();
+		if (SIZE > 1) { sort(buffer.begin(), buffer.end()); }
+		for (int m=0; m<SIZE; m++) {
+			int num = buffer[m];
+			print_move(x, y, num/10 - 1, num%10 - 1);
+		}
 	}
 
 	return moved;
@@ -231,20 +236,15 @@ int main(int argc, char* argv[]) {
 	const int SIZE_1 = 8;
 	const int SIZE_2 = 15;
 	const int diagR_offset = 7;
-
+	int times = 0;
 	int row = zero;
 	int col = zero;
 
 	vector<int> copy_vector(8, 0);
-
 	vector<int> col_array(SIZE_1, zero);
 	vector<int> row_array(SIZE_1, zero);
 	vector<int> diagR_array(SIZE_2, zero);
 	vector<int> diagL_array(SIZE_2, zero);
-	//int col_array[SIZE_1] = {};
-	//int row_array[SIZE_1] = {};
-	//int diagR_array[SIZE_2] = {};
-	//int diagL_array[SIZE_2] = {};
 
 	vector<Point> pieces_x, pieces_o;
 
@@ -272,6 +272,9 @@ int main(int argc, char* argv[]) {
 
 			col += 1;
 			if (row == SIZE_1 - 1 && col == SIZE_1) {
+				if (times > 0) {
+					cout << endl;
+				}
 				cin >> target;
 				bool moved = false;
 				vector<vector<int>* > pieces_opposite(8, NULL);
@@ -291,7 +294,7 @@ int main(int argc, char* argv[]) {
 				diagR_array = copy_vector;
 				pieces_x.clear();
 				pieces_o.clear();
-
+				times += 1;
 				if (!moved) {
 					cout << "No moves are possible" << endl;
 				}
@@ -301,30 +304,6 @@ int main(int argc, char* argv[]) {
 			}
 		}
 	}
-
-
-	cout << "successful" << endl;
-	cout << "diag Right" << endl;
-	print_vector_2(diagR_array);
-
-	cout << "diag Left" << endl;
-	print_vector_2(diagL_array);
-	
-	cout << "row" << endl;
-	print_vector_2(row_array);
-
-	cout << "col" << endl;
-	print_vector_2(col_array);
-
-	cout << "target: " << target << endl;
-	cout << "points: " << endl;
-	if (target == 'O') {
-		print_vector(pieces_o);
-	}else {
-		print_vector(pieces_x);
-	}
-
-
 
 	return 0;
 }
