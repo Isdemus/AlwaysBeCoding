@@ -6,11 +6,6 @@
 #define zero 0
 using namespace std;
 
-typedef struct point {
-	int row;
-	int col;
-}Point;
-
 void print_move(int x, int y, int x_2, int y_2) {
 	char ch1 = x + 'A';
 	char ch2 = x_2 + 'A';
@@ -102,7 +97,8 @@ bool bounded(int x, int y) {
 	return true;
 }
 
-void check_move(int x_, int y_, vector<int> array, vector<int> pieces, vector<int> opposite, string fn, bool &moved, vector<int> &buffer) {
+void check_move(int x_, int y_, vector<int> array, vector<int> pieces, vector<int> opposite,
+					 string fn, bool &moved, vector<int> &buffer) {
 	int x = x_;
 	int y = y_;
 	int diff = 0;
@@ -141,14 +137,19 @@ void check_move(int x_, int y_, vector<int> array, vector<int> pieces, vector<in
 			y -= diff;
 	}
 
-	//cout << "ori_x: " << x_ << " ori_y: " << y_ << " x: " << x << " y: " << y << endl;
-
 	if (bounded(x, y) && diff > 0 && not_occupied(x, y, pieces) && path_clear(x, y, x_, y_, opposite)) {
 		moved = true;
 		buffer.push_back(10 * (x+1) + (y+1));
 	}
 }
 
+void print_vector(vector<int> vec, string str) {
+	cout << str << endl;
+	for (int m=0; m<vec.size(); m++) {
+		cout << "m: " << m << " value:" << vec[m] << endl;
+	}
+	cout << endl;
+}
 
 bool possible_move(vector<int> row_array, vector<int> col_array,
 			 vector<int> diagL_array, vector<int> diagR_array, vector<int> pieces, vector<int> opposite) {
@@ -156,7 +157,7 @@ bool possible_move(vector<int> row_array, vector<int> col_array,
 	int x = zero;
 	int y = zero;
 	bool moved = false;
-
+	
 	for (int m=0; m<SIZE; m++) {
 		x = pieces[m]/10 - 1;
 		y = pieces[m]%10 - 1;
@@ -202,12 +203,6 @@ void make_opposite(vector<vector<int>* > &opposite, vector<Point> pieces) {
 	}
 }
 
-void print_vector(vector<Point> vec) {
-	for (int m=0; m<vec.size(); m++) {
-		cout << "(" << vec[m].row << "," << vec[m].col << ")" << endl;
-	}
-}
-
 void print_vector_2(vector<int> vec) {
 	for (int m=0; m<vec.size(); m++) {
 		cout << "value of m: " << m << " and the value: " << vec[m] << endl;
@@ -226,12 +221,11 @@ int main(int argc, char* argv[]) {
 	int col = zero;
 
 	vector<int> copy_vector(8, 0);
+	vector<int> copy_vector_2(15, 0);
 	vector<int> col_array(SIZE_1, zero);
 	vector<int> row_array(SIZE_1, zero);
 	vector<int> diagR_array(SIZE_2, zero);
 	vector<int> diagL_array(SIZE_2, zero);
-
-	//vector<Point> pieces_x, pieces_o;
 	vector<int> pieces_x, pieces_o;
 
 	while (!finished) {
@@ -245,12 +239,6 @@ int main(int argc, char* argv[]) {
 				diagR_array[diagR_offset - col + row] += 1;
 				diagL_array[row+col] += 1;
 
-				/*
-				Point p;
-				p.row = row;
-				p.col = col;
-				*/
-
 				if (input == 'X') {
 					pieces_x.push_back(10*(row+1) + col+1);
 				}else {
@@ -259,18 +247,18 @@ int main(int argc, char* argv[]) {
 			}
 
 			col += 1;
+
 			if (row == SIZE_1 - 1 && col == SIZE_1) {
+				cin >> target;
+				bool moved = false;
+
 				if (times > 0) {
 					cout << endl;
 				}
-				cin >> target;
-				bool moved = false;
-				//vector<vector<int>* > pieces_opposite(8, NULL);
+
 				if (target == 'X') {
-				//	make_opposite(pieces_opposite, pieces_o);
 					moved = possible_move(row_array, col_array, diagL_array, diagR_array, pieces_x, pieces_o);
 				}else {
-				//	make_opposite(pieces_opposite, pieces_x);
 					moved = possible_move(row_array, col_array, diagL_array, diagR_array, pieces_o, pieces_x);
 				}
 				row = zero;
@@ -278,14 +266,16 @@ int main(int argc, char* argv[]) {
 
 				col_array = copy_vector;
 				row_array = copy_vector;
-				diagL_array = copy_vector;
-				diagR_array = copy_vector;
+				diagL_array = copy_vector_2;
+				diagR_array = copy_vector_2;
 				pieces_x.clear();
 				pieces_o.clear();
-				times += 1;
+
 				if (!moved) {
 					cout << "No moves are possible" << endl;
 				}
+
+				times += 1;
 			}else if (col == SIZE_1) {
 				row += 1;
 				col = zero;
