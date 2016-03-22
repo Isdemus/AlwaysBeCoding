@@ -18,19 +18,27 @@ void print_move(int x, int y, int x_2, int y_2) {
 	cout << ch1 << y+1 << "-" << ch2 << y_2+1 << endl;
 }
 
-bool path_clear(int ori_x, int ori_y, int x, int y, vector<vector<int>* > opposite) {
+bool not_occupied(int x, int y, vector<int> pieces) {
+	int number = 10*(x+1) + y+1;
+	const int SIZE = pieces.size();
+	for (int i=0; i<SIZE; i++) {
+		if (pieces[i] == number) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+bool path_clear(int ori_x, int ori_y, int x, int y, vector<int> opposite) {
+	const int SIZE = opposite.size();
 	if (ori_x == x) { //col path
 		int min_ = min(ori_y, y);
 		int max_ = max(ori_y, y);
-
-		vector<int>* vec = opposite[x];
-		if (vec == NULL) { return true; }
-
+	
 		for (int m = min_+1; m < max_; m++) {
-			for (int k=0; k<vec->size(); k++) {
-				if (vec->at(k) == m) {
-					return false;
-				}
+			if (!not_occupied(x, m, opposite)) {
+				return false;
 			}
 		}
 	}else if (ori_y == y) { //row path
@@ -38,37 +46,25 @@ bool path_clear(int ori_x, int ori_y, int x, int y, vector<vector<int>* > opposi
 		int max_ = max(ori_x, x);
 
 		for (int m = min_+1; m < max_; m++) {
-			vector<int>* vec = opposite[m];
-
-			if (vec == NULL) {return true;}
-			for (int k=0; k<vec->size(); k++) {
-				if (vec->at(k) == y) {
-					return false;
-				}
+			if (!not_occupied(m, y, opposite)) {
+				return false;
 			}
 		}
 	}else if (ori_x < x && ori_y < y) { //clean
 		int t=ori_y + 1;
 		for (int k=ori_x+1; k<x; k++) {
-			vector<int>* vec = opposite[k];
-			if (vec == NULL) { return true; }
-			for (int m=0; m<vec->size(); m++) {
-				if (vec->at(m) == t) {
-					return false;
-				}
+			if (!not_occupied(k, t, opposite)) {
+				return false;
 			}
+
 			t += 1;
 		}
 		
 	}else if (ori_x > x && ori_y > y) {
 		int t=y + 1;
 		for (int k=x+1; k<ori_x; k++) {
-			vector<int>* vec = opposite[k];
-			if (vec == NULL) {return true;}
-			for (int m=0; m<vec->size(); m++) {
-				if (vec->at(m) == t) {
-					return false;
-				}
+			if (!not_occupied(k, t, opposite)) {
+				return false;
 			}
 			t += 1;
 		}
@@ -76,13 +72,8 @@ bool path_clear(int ori_x, int ori_y, int x, int y, vector<vector<int>* > opposi
 	}else if (ori_x > x && ori_y < y) { //clean
 		int t=y - 1;
 		for (int k=x+1; k<ori_x; k++) {
-			vector<int>* vec = opposite[k];
-			if (vec == NULL) { return true; }
-
-			for (int m=0; m<vec->size(); m++) {
-				if (vec->at(m) == t) {
-					return false;
-				}
+			if (!not_occupied(k, t, opposite)) {
+				return false;
 			}
 			t -= 1;
 		}
@@ -90,14 +81,8 @@ bool path_clear(int ori_x, int ori_y, int x, int y, vector<vector<int>* > opposi
 	}else { // ori_x < x && ori_y > y
 		int t=ori_y - 1;
 		for (int k=ori_x+1; k<x; k++) {
-
-			vector<int>* vec = opposite[k];
-			if (vec == NULL) {return true;}
-
-			for (int m=0; m<vec->size(); m++) {
-				if (vec->at(m) == t) {
-					return false;
-				}
+			if (!not_occupied(k, t, opposite)) {
+				return false;
 			}
 			t -= 1;
 		}
@@ -117,7 +102,7 @@ bool bounded(int x, int y) {
 	return true;
 }
 
-void check_move(int x_, int y_, vector<int> array, vector<vector<int>* > opposite, string fn, bool &moved, vector<int> &buffer) {
+void check_move(int x_, int y_, vector<int> array, vector<int> pieces, vector<int> opposite, string fn, bool &moved, vector<int> &buffer) {
 	int x = x_;
 	int y = y_;
 	int diff = 0;
@@ -158,7 +143,7 @@ void check_move(int x_, int y_, vector<int> array, vector<vector<int>* > opposit
 
 	//cout << "ori_x: " << x_ << " ori_y: " << y_ << " x: " << x << " y: " << y << endl;
 
-	if (bounded(x, y) && diff > 0 && path_clear(x, y, x_, y_, opposite)) {
+	if (bounded(x, y) && diff > 0 && not_occupied(x, y, pieces) && path_clear(x, y, x_, y_, opposite)) {
 		moved = true;
 		buffer.push_back(10 * (x+1) + (y+1));
 	}
@@ -166,27 +151,27 @@ void check_move(int x_, int y_, vector<int> array, vector<vector<int>* > opposit
 
 
 bool possible_move(vector<int> row_array, vector<int> col_array,
-			 vector<int> diagL_array, vector<int> diagR_array, vector<Point> pieces, vector<vector<int>* > opposite) {
+			 vector<int> diagL_array, vector<int> diagR_array, vector<int> pieces, vector<int> opposite) {
 	const int SIZE = pieces.size();
 	int x = zero;
 	int y = zero;
 	bool moved = false;
 
 	for (int m=0; m<SIZE; m++) {
-		x = pieces[m].row;
-		y = pieces[m].col;
+		x = pieces[m]/10 - 1;
+		y = pieces[m]%10 - 1;
 
 		vector<int> buffer;
-		check_move(x, y, diagR_array, opposite, "diagR-", moved, buffer);
-		check_move(x, y, col_array, opposite, "row-", moved, buffer);
-		check_move(x, y, diagL_array, opposite, "diaL-", moved, buffer);
-		check_move(x, y, row_array, opposite, "col-", moved, buffer);
-		check_move(x, y, row_array, opposite, "col+", moved, buffer);
-		check_move(x, y, diagL_array, opposite, "diaL+", moved, buffer);
-		check_move(x, y, col_array, opposite, "row+", moved, buffer);
-		check_move(x, y, diagR_array, opposite, "diaR+", moved, buffer);
+		check_move(x, y, diagR_array, pieces, opposite, "diagR-", moved, buffer);
+		check_move(x, y, col_array, pieces, opposite, "row-", moved, buffer);
+		check_move(x, y, diagL_array, pieces, opposite, "diaL-", moved, buffer);
+		check_move(x, y, row_array, pieces, opposite, "col-", moved, buffer);
+		check_move(x, y, row_array, pieces, opposite, "col+", moved, buffer);
+		check_move(x, y, diagL_array, pieces, opposite, "diaL+", moved, buffer);
+		check_move(x, y, col_array, pieces, opposite, "row+", moved, buffer);
+		check_move(x, y, diagR_array, pieces, opposite, "diaR+", moved, buffer);
 
-		int SIZE = buffer.size();
+		const int SIZE = buffer.size();
 		if (SIZE > 1) { sort(buffer.begin(), buffer.end()); }
 		for (int m=0; m<SIZE; m++) {
 			int num = buffer[m];
@@ -246,7 +231,8 @@ int main(int argc, char* argv[]) {
 	vector<int> diagR_array(SIZE_2, zero);
 	vector<int> diagL_array(SIZE_2, zero);
 
-	vector<Point> pieces_x, pieces_o;
+	//vector<Point> pieces_x, pieces_o;
+	vector<int> pieces_x, pieces_o;
 
 	while (!finished) {
 		cin >> input;
@@ -259,14 +245,16 @@ int main(int argc, char* argv[]) {
 				diagR_array[diagR_offset - col + row] += 1;
 				diagL_array[row+col] += 1;
 
+				/*
 				Point p;
 				p.row = row;
 				p.col = col;
+				*/
 
 				if (input == 'X') {
-					pieces_x.push_back(p);
+					pieces_x.push_back(10*(row+1) + col+1);
 				}else {
-					pieces_o.push_back(p);
+					pieces_o.push_back(10*(row+1) + col+1);
 				}
 			}
 
@@ -277,13 +265,13 @@ int main(int argc, char* argv[]) {
 				}
 				cin >> target;
 				bool moved = false;
-				vector<vector<int>* > pieces_opposite(8, NULL);
+				//vector<vector<int>* > pieces_opposite(8, NULL);
 				if (target == 'X') {
-					make_opposite(pieces_opposite, pieces_o);
-					moved = possible_move(row_array, col_array, diagL_array, diagR_array, pieces_x, pieces_opposite);
+				//	make_opposite(pieces_opposite, pieces_o);
+					moved = possible_move(row_array, col_array, diagL_array, diagR_array, pieces_x, pieces_o);
 				}else {
-					make_opposite(pieces_opposite, pieces_x);
-					moved = possible_move(row_array, col_array, diagL_array, diagR_array, pieces_o, pieces_opposite);
+				//	make_opposite(pieces_opposite, pieces_x);
+					moved = possible_move(row_array, col_array, diagL_array, diagR_array, pieces_o, pieces_x);
 				}
 				row = zero;
 				col = zero;
