@@ -188,7 +188,7 @@ void boolean_interpretor(bool value) {
 }
 
 int main(int argc, char* argv[]) {
-	cout << "program begein" << endl;
+	cout << "program begin" << endl;
 
 	/* List declarations */
 	List* firstClass = new List();
