@@ -32,26 +32,25 @@ def main():
 
 		for i in range(0, BOARD_SIZE):
 			try:
-				row = raw_input()
+				row = input()
 			except EOFError:
 				return
 
-			# print a blank like between outpus
+			# print a blank like between output
 			if finished_board:
 				finished_board = False
-				print" "
+				print("")
 
 			for j, pos in enumerate(row):
 				if pos == PIECE_O or pos == PIECE_X:
 					num_pieces_horizontal[i] += 1
 					num_pieces_vertical[j]   += 1
-					num_pieces_diagonal_bslash[BOARD_SIZE-i+j] += 1
+					num_pieces_diagonal_bslash[BOARD_SIZE-1-i+j] += 1
 					num_pieces_diagonal_fslash[i+j] += 1
 
 			board.append(row)
 
-		piece = raw_input()
-		piece = piece[0]
+		piece = input()
 
 
 		# Processing
@@ -92,15 +91,15 @@ def main():
 
 
 				# diagonal backward slash
-				pos_up_diag_bslash_i = i - num_pieces_diagonal_bslash[BOARD_SIZE-i+j]
-				pos_up_diag_bslash_j = j - num_pieces_diagonal_bslash[BOARD_SIZE-i+j]
-				if can_move_up_diag_bslash(i, j, pos_up_diag_bslash_i, pos_up_diag_bslash_j, num_pieces_diagonal_bslash[BOARD_SIZE-i+j], piece):
+				pos_up_diag_bslash_i = i - num_pieces_diagonal_bslash[BOARD_SIZE-1-i+j]
+				pos_up_diag_bslash_j = j - num_pieces_diagonal_bslash[BOARD_SIZE-1-i+j]
+				if can_move_up_diag_bslash(i, j, pos_up_diag_bslash_i, pos_up_diag_bslash_j, num_pieces_diagonal_bslash[BOARD_SIZE-1-i+j], piece):
 					output.append(initial_pos + "-" + get_pos(pos_up_diag_bslash_i, pos_up_diag_bslash_j))
 					has_moves = True
 
-				pos_down_diag_bslash_i = i + num_pieces_diagonal_bslash[BOARD_SIZE-i+j]
-				pos_down_diag_bslash_j = j + num_pieces_diagonal_bslash[BOARD_SIZE-i+j]
-				if can_move_down_diag_bslash(i, j, pos_down_diag_bslash_i, pos_down_diag_bslash_j, num_pieces_diagonal_bslash[BOARD_SIZE-i+j], piece):
+				pos_down_diag_bslash_i = i + num_pieces_diagonal_bslash[BOARD_SIZE-1-i+j]
+				pos_down_diag_bslash_j = j + num_pieces_diagonal_bslash[BOARD_SIZE-1-i+j]
+				if can_move_down_diag_bslash(i, j, pos_down_diag_bslash_i, pos_down_diag_bslash_j, num_pieces_diagonal_bslash[BOARD_SIZE-1-i+j], piece):
 					output.append(initial_pos + "-" + get_pos(pos_down_diag_bslash_i, pos_down_diag_bslash_j))
 					has_moves = True
 
@@ -120,9 +119,9 @@ def main():
 
 		if has_moves:
 			for out in sorted(output):
-				print out
+				print(out)
 		else:
-			print NO_MOVES
+			print(NO_MOVES)
 
 		finished_board = True
 
