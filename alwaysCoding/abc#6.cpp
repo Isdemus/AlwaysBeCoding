@@ -27,68 +27,37 @@ void print_array(int* array, int SIZE, string str) {
 	cout << endl;
 }
 
-void quick_sort(int* array, int left, int right) {
-	if (array != NULL) { //always good to check if the pointer is NULL
-		int middle = (right + left) / 2;
-		int start_l = left;
-		int start_r = right;
-		int temp = 0;
-		int temp2 = 0;
-		cout << endl;
+int partition(int* array, int start, int end) {
+	int pivot = (start + end) / 2;
+	int middleValue = array[pivot];
 
-		for (int m=left; m<=right; m++) {
-			cout << *(array+m) << " ";
+	int left = start; int right = end;
+
+	while(left <= right) {
+		while (middleValue > array[left]) left++;
+		while (middleValue < array[right]) right--;
+
+		if (left <= right) {
+			int temp = array[left];
+			array[left] = array[right];
+			array[right] = temp;
+			left++;
+			right--;
 		}
-		cout << endl;
-		cout << "left: " << left-left << " right: " << right-left << " middle: " << middle-left << endl;
-		
-		//cout << "right: " << right << endl;
-		while (start_l <= start_r) {
-			while (array[start_l] < array[middle]) start_l += 1;
-			while (array[start_r] > array[middle]) start_r -= 1;
+	}
 
-			cout << "start_l: " << start_l-left << " start_r: " << start_r-left << endl;
+	return left;
 
-			for (int m=left; m<=right; m++) {
-				cout << *(array+m) << " ";
-			}
-			cout << endl;
+}
 
-			if (start_l <= start_r) { //if (array[start_l] > array[start_r]) {
-				// cout << "pivot (middle: " << middle << ") : " << array[middle] << endl;
-				// cout << "changing array[" << start_l - left << "]" << ": " << array[start_l]
-				// 	 << " and array[" << start_r-left << "]" << ": " << array[start_r] << endl;
-				temp = array[start_l];
-				temp2 = array[start_r];
-				array[start_l] = temp2;
-				array[start_r] = temp;
-				start_l += 1;
-				start_r -= 1;
+void quicksort(int* array, int left, int right) {
+	int index = partition(array, left, right);
+	if (left < index - 1) {
+		quicksort(array, left, index-1);
+	}
 
-
-				for (int m=left; m<=right; m++) {
-					cout << *(array+m) << " ";
-				}
-				cout << endl;
-					}
-		}
-
-		if (left < start_r) {
-			// cout << "first if" << endl;
-			// cout << "left: " << left-left << " right: " << right-left << endl;
-			// cout << "start_l: " << start_l-left << " start_r: " << start_r-left << endl;
-
-
-			quick_sort(array, left, start_r);
-		}
-		if (right > start_l-1) {
-			// cout << "second if" << endl;
-			// cout << "left: " << left-left << " right: " << right-left << endl;
-			// cout << "start_l: " << start_l-left << " start_r: " << start_r-left << endl;
-
-
-			quick_sort(array, start_l, right);
-		}
+	if (index < right) {
+		quicksort(array, index, right);
 	}
 }
 
@@ -100,7 +69,7 @@ int main(int argc, char* argv[]) {
 
 	fill_the_array(array, SIZE);
 	print_array(array, SIZE, "Before using our quicksort");
-	quick_sort(array, 0, SIZE-1);
+	quicksort(array, 0, SIZE-1);
 	print_array(array, SIZE, "After using our quicksort");
 
 	delete[] array;
