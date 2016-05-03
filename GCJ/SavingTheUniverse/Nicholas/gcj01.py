@@ -15,15 +15,17 @@ def find_min_search_engine(S_list, Q_list, begin, current):
     minimum = len(Q_list) - begin
     for search_engine in S_list:
         candidate = Q_list[begin:].count(search_engine)
+        print("min: ", minimum,  " and candidate: ", candidate)
         if candidate < minimum and search_engine != current:
             minimum = candidate
-            answer_index = search_engine
+            answer_engine = search_engine
 
     return answer_engine
 
 N = int(input())
-
-while (N>0):
+N_begin = 1
+while (N_begin<=N):
+    N_begin += 1
     S = input()
     S_cp = int(S)
     S_list = []
@@ -40,16 +42,17 @@ while (N>0):
         Q_list.append(input())
         Q_cp -= 1
 
-    min_switches = int(Q)-1
+    min_switches = 0
 
     current_engine = find_min_search_engine(S_list, Q_list, 0, "")
     # O(N^2), probably can improve more later
-    while (Q_cp < int(Q)): # Currently Q_cp is zero
+    while (Q_cp < int(Q)-1): # Currently Q_cp is zero
+        print("current best engine: ", current_engine)
         # Finding a search engine that has the min number of queries in Q_list
         if Q_list[Q_cp] == current_engine:
             current_engine = find_min_search_engine(S_list, Q_list, Q_cp, current_engine)
             min_switches += 1
         Q_cp += 1
 
-    print("Case #", N, ": ", min_switches)
-    N -= 1
+    print("Case #", N_begin, ": ", min_switches)
+
