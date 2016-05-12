@@ -1,0 +1,22 @@
+Frequently used compilation options (Personal Notes):
+Many options can be combined to use, but optimization and debugging shouldn't be used simultaneously (can occur an error generally).
+
+# two step method (compile and linking)
+g++ -c myprog.cc; g++ myprog.o -o myprog
+
+# generally used compile options for g++
+g++ -g myprog.cc -o myprog
+g++ -Wall myprog.cc -o myprog
+g++ -O myprog.c -o myprog
+g++ myprog.cc -o myprog -lXll
+
+# lm = math function
+gcc myprog.c -o myprog -lm
+
+# multiple source files
+g++ myprog1.cc myprog2.cc -o file
+
+# multiple with two step methods
+g++ -c myprog1.c; g++ -c myprog2.c; g++ myprog1.o myprog2.o -o myprog 
+Advantage of this method is that: if we update myprog1.c, we can just do the following:
+g++ -c myprog1.c; g++ myprog1.o myprog2.o -o myprog
