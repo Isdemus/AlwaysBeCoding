@@ -3,9 +3,40 @@
 	<head>
 		<title>Testing</title>
 		<meta charset="utf-8">
+		<link rel="stylesheet" type="text/css" href="simpleCSS.css">
+		<script>
+			function myFunction() {
+				var x = document.forms["queryForm"]["Query"].value;
+				alert("The query: " + x + " has been executed");
+				document.write("The Given Query: " + x + " has been executed<br>");
+				document.write("<br><br>Please wait until you will get notified");
+				return true;
+			}
+			function myHandler(event) {
+				console.write
+				if (event.which == 13 && event.shiftKey) {
+					var textArea = document.getElementById("textArea");
+					textArea.value = textArea.value + "\n";
+					console.log("InTheShift");
+					console.log(textArea.value);
+					return false;
+				}else if (event.which == 13) {
+					console.log("InTheEnter");
+					return false;
+				}else {
+					console.log("wrong");
+					return true;
+				}			
+			}
+		</script>
 	</head>
 
 	<body>
 		<h1>Testing</h1>
+		<form id="myFormId" name="queryForm" onsubmit="return myFunction()"> 
+			<input type="text" id="textArea" name="Query" onKeyPress="return myHandler(event)">
+			<br>
+			<input type="submit" id="submitButton" name="Submit">
+		</form>
 	</body>
 </html>	
