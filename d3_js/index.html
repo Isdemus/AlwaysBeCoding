@@ -7,22 +7,34 @@
 
 	<body>
 		<script>
-			var data = [10, 20, 30, 80];
+			var data = [10, 20, 30, 40];
+			var data2 = [15, 25];
 			var width = Math.max("800", innerWidth);
 			var height = Math.max("600", innerHeight);
 
 			var canvas = d3.select("body")
 					.append("svg")
 					.attr("width", width)
-					.attr("height", height);
-			
+					.attr("height", height)
+					.append("g")
+					.attr("transform", "translate(20, 0)");
+
 			var widthScale = d3.scale.linear()
 								.domain([0, 80])
-								.range([0, width]);
+								.range([0, height]);
 
 			var colorScale = d3.scale.linear()
 								.domain([-100, 100])
 								.range(["red", "purple"]);
+
+			var colorScale2 = d3.scale.linear()
+								.domain([-100, 100])
+								.range(["blue", "orange"]);
+
+			var circle = canvas.append("circle")
+							.attr("cx", width/2)
+							.attr("cy", height/2)
+							.attr("r", 100);
 
 		    var bars = canvas.selectAll("rect")
 		    			.data(data)
@@ -32,6 +44,16 @@
 		    				.attr("width", function(d) { return widthScale(d); })
 		    				.attr("height", function(d) { return 50; })
 		    				.attr("fill", function(d) { return colorScale(d); });
+
+			var rects = canvas.selectAll("rect")
+						.data(data2)
+						.attr("fill", "black")
+						.exit()
+						.attr("fill", function(d) { return colorScale2(d); });
+
+			var circles = canvas.selectAll("circle")
+							.data(data2)
+							.attr("fill", "pink");
 
 		</script>
 	</body>
