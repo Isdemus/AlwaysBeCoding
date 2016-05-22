@@ -7,26 +7,67 @@ Coded by isdemus (May 21 2016)
 */
 
 #include <iostream>
+#include <cstdlib>
+
+#define customStdout(a, b) std::cout << "Case #" << a << ": " << b << std::endl;
+
 using namespace std;
 
+typedef long long int lli;
+typedef unsigned int ui;
+
 int main (int argc, char* argv[]) {
-	unsigned int cases, numMonth, numDaysInMonth, numDaysInWeek;
+	lli cases, numMonth, numDaysInMonth, numDaysInWeek;
 	cin >> cases;
 
 	// Getting input (3 numbers in a line)
-	for (unsigned int c=1; c<=cases; c++) {
-		cin >> numMonth;
-		cin >> numDaysInMonth;
-		cin >> numDaysInWeek;
+	for (ui c=1; c<=cases; c++) {
+		cin >> numMonth >> numDaysInMonth >> numDaysInWeek;
 
 		// initializing the variables to use in each case
-		unsigned int rowIndicator = 0;
-		unsigned int colIndicator = rowIndicator; // all zero
-		unsigned int dayIndicator = colIndicator; // all zero
-		unsigned int currentMonth = dayIndicator; // all zero
-		
-// better solution
-// O(NC) where c is #of cases - way faster than the first solution
+		// no longer need colIndicator
+
+		// lli colIndicator
+		lli rowIndicator, dayIndicator, currentMonth;
+		rowIndicator = dayIndicator = currentMonth = 0;
+	
+// Even betetr solution - O(1) for large
+// O(C) where C is #of cases - way faster than the first solution
+// Key: For Version2, we subtract the rest of days to fill from the next month.
+//		For Version3, we add the days left from this month to the next month.
+// Cases: 1. numDaysInMonth is divisible by numDaysInWeek (ex. 3 28 7)
+//		  2. numDaysInMonth will be divisible by numDaysInWeek after some months (ex. )
+//		  3. numDaysInMonth will not be divisible at all (ex. 3 11 4)
+
+		do {
+			dayIndicator += numDaysInMonth;
+			rowIndicator += dayIndicator / numDaysInWeek + (dayIndicator%numDaysInWeek ? 1 : 0);
+			//cout << rowIndicator << endl;
+			dayIndicator = dayIndicator % numDaysInWeek;
+			currentMonth += 1; 
+			// We just printed a month (adding the rest days to the next month - no need to care)
+		} while (dayIndicator != 0 && currentMonth < numMonth);
+
+		// For case #1 and case #2
+		if (currentMonth != numMonth) {
+			rowIndicator = rowIndicator * (numMonth / currentMonth);
+			numMonth = numMonth % currentMonth;
+
+			// Same Logic for the case #3 above except dayIndicator won't be zero this time
+			while (currentMonth < numMonth) {
+				dayIndicator += numDaysInMonth;
+				rowIndicator += dayIndicator / numDaysInWeek + (dayIndicator%numDaysInWeek ? 1 : 0);
+				dayIndicator = dayIndicator % numDaysInWeek;
+				currentMonth += 1;
+			}
+		}
+
+		customStdout(c, rowIndicator);
+
+
+/*
+// better solution - O(N) - Version 2
+// O(NC) where C is #of cases - way faster than the first solution
 		bool neatEnd = true;
 		currentMonth += 1;
 		colIndicator = numDaysInWeek - 1;
@@ -35,14 +76,14 @@ int main (int argc, char* argv[]) {
 				rowIndicator += 1;
 			}
 
-			unsigned value = numDaysInWeek - 1 - colIndicator;
+			long long int value = numDaysInWeek - 1 - colIndicator;
 			neatEnd = false;
 
-			unsigned int quotient = (numDaysInMonth-value) / numDaysInWeek;
-			unsigned int remainder = (numDaysInMonth-value) % numDaysInWeek;
+			long long int quotient = (numDaysInMonth-value) / numDaysInWeek;
+			long long int remainder = (numDaysInMonth-value) % numDaysInWeek;
 
-			//cout << "quotient: " << quotient << " remainder: " << remainder << endl;
-			//cout << "currentMonth: " << currentMonth << endl;
+			cout << "quotient: " << quotient << " remainder: " << remainder << endl;
+			cout << "currentMonth: " << currentMonth << endl;
 			rowIndicator += quotient + 1;
 			colIndicator = remainder - 1;
 			if (remainder == 0) {
@@ -54,13 +95,11 @@ int main (int argc, char* argv[]) {
 		}	
 
                 cout << "Case #" << c << ": " << rowIndicator << endl;
-
-
-
-
-
+*/
 
 /* This solution takes too much time for a large set of input values.
+// O(N^2) -- Version 1
+// O(CN^2) where C is #of cases - way faster than the first solution
 		dayIndicator += 1; // first day in the calendar is at [0,0]
 		currentMonth += 1;
 
