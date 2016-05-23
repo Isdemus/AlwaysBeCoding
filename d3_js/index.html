@@ -42,6 +42,9 @@
 				}else if (option == "last") {
 					var newX = x2;
 					var newY = y2;
+				}else if (option == "begin") {
+					var newX = beginX;
+					var newY = beginY;
 				} // more options to add
 
 				var circleScalerX = d3.scale.linear()
@@ -97,13 +100,13 @@
 									appearing(circle2, 1500, "black");
 
 									circle2 = customized_transition(circle2, startLetterCoord[0]+100, -1, 3, 2000, 2000,
-																	 "letters2", "yellow", "red", "last");
+																	 "letters2", "yellow", "gray", "last");
 									
 									circle2.attr("cy", 30);
 									appearing(circle2, 3000, "black");
 
 									circle2 = customized_transition(circle2, -1, startLetterCoord[1]+150, 5, 2000, 4000,
-																	 "letters3", "green", "red", "last");
+																	 "letters3", "green", "orange", "last");
 									
 
 
