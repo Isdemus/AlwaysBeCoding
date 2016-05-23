@@ -20,3 +20,6 @@ g++ myprog1.cc myprog2.cc -o file
 g++ -c myprog1.c; g++ -c myprog2.c; g++ myprog1.o myprog2.o -o myprog 
 Advantage of this method is that: if we update myprog1.c, we can just do the following:
 g++ -c myprog1.c; g++ myprog1.o myprog2.o -o myprog
+
+c++11/14 compile method:
+g++ -std=c++11 myprog.cc -o myprog
