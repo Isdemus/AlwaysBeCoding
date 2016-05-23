@@ -3,27 +3,9 @@
 	<head>
 		<meta charset="utf-8"/>
 		<script src="d3.min.js"></script>
-	</head>
-
-	<body>
 		<script>
-			var numbers = [[15, 27, 33, 35, 43, 45],
-						   [24, 25, 33, 34, 38, 39]];
-
-			var width = Math.max("800", innerWidth);
-			var height = Math.max("600", innerHeight);
-			var startLetterCoord = [50, 30, 25];
-
-			var canvas = d3.select("body")
-						   .append("svg")
-						   .attr("width", width)
-						   .attr("height", height);
-
-			var circle = canvas.append("circle")
-							   .attr("cx", startLetterCoord[0])
-							   .attr("cy", startLetterCoord[1])
-							   .attr("r", startLetterCoord[2]);
-
+			// A transitioning function that moves the object to a new coordinate of (x2,y2).
+			// After the transition, it leaves circles on the path behind with a color from a colar spectrum.
 			function customized_transition(object, x2, y2, number, exeTime, delayTime, groupName, color1, color2, option) {
 				if (x2 == -1)
 					x2 = Number(object.attr("cx"));
@@ -87,11 +69,35 @@
 				return circle2;
 			}
 
+			// A function that makes the object to appear (transitioning its color after the given delay time) on the screen
 			function appearing(object, delayTime, color) {
 				object.transition()
 					  .delay(delayTime)
 					  .attr("fill", color);
 			}
+		</script>
+	</head>
+
+	<body>
+		<script>
+			var numbers = [[15, 27, 33, 35, 43, 45],
+						   [24, 25, 33, 34, 38, 39]];
+
+			var width = Math.max("800", innerWidth);
+			var height = Math.max("600", innerHeight);
+			var startLetterCoord = [50, 30, 25];
+
+			var canvas = d3.select("body")
+						   .append("svg")
+						   .attr("width", width)
+						   .attr("height", height);
+
+			var circle = canvas.append("circle")
+							   .attr("cx", startLetterCoord[0])
+							   .attr("cy", startLetterCoord[1])
+							   .attr("r", startLetterCoord[2]);
+
+
 					
 			circle.transition()
 				.each("start", function() {
