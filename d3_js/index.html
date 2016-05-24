@@ -4,6 +4,8 @@
 		<meta charset="utf-8"/>
 		<script src="d3.min.js"></script>
 		<script>
+			var startLetterCoord = [50, 30, 25];
+
 			// A transitioning function that moves the object to a new coordinate of (x2,y2).
 			// After the transition, it leaves circles on the path behind with a color from a colar spectrum.
 			function customized_transition(object, x2, y2, number, exeTime, delayTime, groupName, color1, color2, option) {
@@ -75,6 +77,10 @@
 					  .delay(delayTime)
 					  .attr("fill", color);
 			}
+
+			function checkCoord(object) {
+				console.log(object.attr("cx"), object.attr("cy"));
+			}
 		</script>
 	</head>
 
@@ -85,7 +91,7 @@
 
 			var width = Math.max("800", innerWidth);
 			var height = Math.max("600", innerHeight);
-			var startLetterCoord = [50, 30, 25];
+			
 
 			var canvas = d3.select("body")
 						   .append("svg")
@@ -112,10 +118,24 @@
 									appearing(circle2, 3000, "black");
 
 									circle2 = customized_transition(circle2, -1, startLetterCoord[1]+150, 5, 2000, 4000,
-																	 "letters3", "green", "orange", "last");
+																	 "letters3", "green", "orange", "begin");
+									
+									circle2.attr("cx", startLetterCoord[0] + 180);
+									appearing(circle2, 4500, "black");
 									
 
+									circle2 = customized_transition(circle2, -1, startLetterCoord[1]+150, 5, 2000, 6000,
+																	 "letters4", "blue", "green", "begin");
 
+									circle2.attr("cx", startLetterCoord[0] + 350);
+									appearing(circle2, 6000, "black");
+
+									circle2 = customized_transition(circle2, Number(circle2.attr("cx"))+100,
+																			 Number(circle2.attr("cy"))+150, 5, 2000, 8000,
+																	 "letters5", "red", "orange", "end");
+									
+									circle2.attr("cy", startLetterCoord[1]);
+									appearing(circle2, 7500, "black");
 
 								});
 
