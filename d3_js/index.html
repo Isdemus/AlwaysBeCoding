@@ -132,10 +132,17 @@
 
 									circle2 = customized_transition(circle2, Number(circle2.attr("cx"))+100,
 																			 Number(circle2.attr("cy"))+150, 5, 2000, 8000,
-																	 "letters5", "red", "orange", "end");
+																	 "letters5", "red", "orange", "last");
 									
+
 									circle2.attr("cy", startLetterCoord[1]);
 									appearing(circle2, 7500, "black");
+
+									circle2 = customized_transition(circle2, Number(circle2.attr("cx"))-100,
+																			 Number(circle2.attr("cy"))+150, 5, 2000, 10000,
+																	 "letters6", "green", "yellow", "begin");
+
+									circle2.attr("cx", Number(circle2.attr("cx")) + 100);
 
 								});
 
