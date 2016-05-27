@@ -143,6 +143,28 @@
 																	 "letters6", "green", "yellow", "begin");
 
 									circle2.attr("cx", Number(circle2.attr("cx")) + 100);
+									appearing(circle2, 9000, "black");
+									circle2 = customized_transition(circle2, -1, Number(circle2.attr("cy"))+150, 5, 2000, 12000,
+																	 "letters6", "blue", "orange", "begin");
+
+									circle2.attr("cx", Number(circle2.attr("cx")) + 100);
+									appearing(circle2, 10500, "black");
+
+									circle2 =customized_transition(circle2, -1, Number(circle2.attr("cy"))+150, 5, 2000, 14000,
+																	 "letters6", "orange", "yellow", "begin");
+
+									appearing(circle2, 12000, "black");
+
+									circle2 =customized_transition(circle2, Number(circle2.attr("cx"))+100
+																			, Number(circle2.attr("cy"))+150, 5, 2000, 16000,
+																	 "letters6", "yellow", "red", "last");
+
+									appearing(circle2, 13500, "black");
+									circle2 =customized_transition(circle2, -1, Number(circle2.attr("cy"))-150, 5, 2000, 18000,
+																	 "letters6", "red", "blue", "last");
+
+									circle2.attr("cx", Number(circle2.attr("cx")) + 100);
+
 
 								});
 
