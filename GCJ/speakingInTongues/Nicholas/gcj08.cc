@@ -7,14 +7,30 @@ Coded by isdemus (May 30 2016)
 */
 
 #include <iostream>
+#include <utility>
 #include <map>
 using namespace std;
 
 typedef unsigned int ui;
+/*
+std::map<char, char>::operator= (map<char, char>&& old_map) {
+  this.reference = std::move(old_map.reference);
+  old_map.reference = NULL;
+}
+*/
+
+void mapping_helper(map<char, char>& translator, const string& hint, const string& answ) {
+  for (ui index=0; index<hint.length(); index++)
+    translator[hint[index]] = answ[index];
+
+  //return translator
+}
 
 int main (int argc, char* argv[]) {
   int cases;
   map<char, char> translator;
+
+  // mapping elements to register
   string hint1, hint2, hint3, answ1, answ2, answ3;
   hint1 = "ejp mysljylc kd kxveddknmc re jsicpdrysi";
   hint2 = "rbcpc ypc rtcsra dkh wyfrepkym veddknkmkrkcd";
@@ -23,15 +39,17 @@ int main (int argc, char* argv[]) {
   answ2 = "there are twenty six factorial possibilities";
   answ3 = "so it is okay if you want to just give up";
   
-  for (ui index=0; index<hint1.length(); index++) 
-    translator[hint1[index]] = answ1[index];
-  for (ui index=0; index<hint2.length(); index++)
-    translator[hint2[index]] = answ2[index];
-  for (ui index=0; index<hint3.length(); index++)
-    translator[hint3[index]] = answ3[index];
+  // adding mapping elements from the three given sentences.
+  //translator = mapping_helper(translator, hint1, answ1);
+  //translator = mapping_helper(translator, hint2, answ2);
+  //translator = mapping_helper(translator, hint3, answ3);
 
+  mapping_helper(translator, hint1, answ1);
+  mapping_helper(translator, hint2, answ2);
+  mapping_helper(translator, hint3, answ3);
+
+  // adding the rest mapping elements
   translator['z'] = 'q';
-  translator[' '] = ' ';
 
   cin >> cases;
   getline(cin, hint1); 
@@ -39,6 +57,7 @@ int main (int argc, char* argv[]) {
     string lineToTranslate, answer = "";
     getline(cin, lineToTranslate);
 
+    // For a given line(string input), it translates to
     for (char ch : lineToTranslate) {
       answer += translator[ch];
     }
