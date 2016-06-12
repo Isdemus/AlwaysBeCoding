@@ -33,31 +33,31 @@ bool columnCheck(map<ui, char> guide_book, string& status) {
 	char _ch, _ch2;
 	bool colCheck;
 
-  	for (ui col=0; col<4; col++) {
-  		_ch2 = ' ';
-  		colCheck = true;
+	for (ui col=0; col<4; col++) {
+		_ch2 = ' ';
+		colCheck = true;
 
-  		for (ui row=0; row<4; row++) {
-  			_ch = guide_book[row*10+col];
+		for (ui row=0; row<4; row++) {
+			_ch = guide_book[row*10+col];
 
-  			if (_ch == '.') {
-  				colCheck = false;
-  				break;
-  			} else if (colCheck && _ch2 == ' ' && _ch != 'T') {
-  				_ch2 = _ch;
-  			} else if (colCheck && _ch != 'T' && _ch != _ch2) {
-  				colCheck = false;
-  				break;
-  			}
-  		}
+			if (_ch == '.') {
+				colCheck = false;
+				break;
+			} else if (colCheck && _ch2 == ' ' && _ch != 'T') {
+				_ch2 = _ch;
+			} else if (colCheck && _ch != 'T' && _ch != _ch2) {
+				colCheck = false;
+				break;
+			}
+		}
 
-  		if (colCheck) {
+		if (colCheck) {
 			changeStatus(_ch2, status);
 			return true;
-  		}
-  	}	
+		}
+	}	
 
-  	return false;
+	return false;
 }
 
 // diagCheck: map<ui, char>, string& -> bool
@@ -65,41 +65,41 @@ bool columnCheck(map<ui, char> guide_book, string& status) {
 // It is checking the winning condition in two diagonals (left/right)
 bool diagonalCheck(map<ui, char> guide_book, string& status) {
 	char _ch, _ch2 = ' ', _ch3 = ' ';
-  	bool diag1Check = true, diag2Check = true;
+  bool diag1Check = true, diag2Check = true;
 
-  	for (ui diag=0; diag<4; diag++) {
-  		if (diag1Check) {
-  			_ch = guide_book[diag*10+diag];
+	for (ui diag=0; diag<4; diag++) {
+		if (diag1Check) {
+			_ch = guide_book[diag*10+diag];
 
-  			if (_ch == '.')
-  				diag1Check = false;
-  			else if (_ch2 == ' ' && _ch != 'T')
-  				_ch2 = _ch;
-  			else if (_ch != 'T' && _ch != _ch2)
-  				diag1Check = false;
-  		}
+			if (_ch == '.')
+				diag1Check = false;
+			else if (_ch2 == ' ' && _ch != 'T')
+				_ch2 = _ch;
+			else if (_ch != 'T' && _ch != _ch2)
+				diag1Check = false;
+		}
 
-  		if (diag2Check) {
-  			_ch = guide_book[diag*10+(3-diag)];
+		if (diag2Check) {
+			_ch = guide_book[diag*10+(3-diag)];
 
-  			if (_ch == '.')
-  				diag2Check = false;
-  			else if (_ch3 == ' ' && _ch != 'T')
-  				_ch3 = _ch;
-  			else if (_ch != 'T' && _ch != _ch3)
-  				diag2Check = false;
-  		}
-  	}
+			if (_ch == '.')
+				diag2Check = false;
+			else if (_ch3 == ' ' && _ch != 'T')
+				_ch3 = _ch;
+			else if (_ch != 'T' && _ch != _ch3)
+				diag2Check = false;
+		}
+	}
 
-  	if (diag1Check) {
-  		changeStatus(_ch2, status);
-  		return true;
-  	} else if (diag2Check) {
-  		changeStatus(_ch3, status);
-  		return true;
-  	} else {
-  		return false;
-  	}
+	if (diag1Check) {
+		changeStatus(_ch2, status);
+		return true;
+	} else if (diag2Check) {
+		changeStatus(_ch3, status);
+		return true;
+	} else {
+		return false;
+	}
 }
 
 // main function to run our program
