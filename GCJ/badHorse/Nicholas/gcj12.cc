@@ -2,98 +2,137 @@
 Google Code Jam Entrance Test
 (Bad Horse: https://code.google.com/codejam/contest/2933486/dashboard)
 
-Used Algorithm Method: Simple Logic
-Coded by isdemus (June 12 2016)
+Used Algorithm Method: Logic + OOP + Depth First Search Algorithm
+Re-Coded by isdemus (June 18 2016)
 */
 
-#include <iostream>
-#include <map>
-
-#define stdoutans(c, answer) std::printf("Case #%d: %s\n", c, answer);
-
-using namespace std;
-
-enum custom_bool { out, in, hold };
+#include "gcj12.h"
+#define print_vector(vec) for(unsigned int i=0; i<vec->size(); i++)
 
 typedef unsigned int ui;
-typedef enum custom_bool ecb;
+
+// Assuming that no same enemy_name will be given
+void player::add_enemy(std::string enemy_name) {
+  if (ladder[enemy_name] == nullptr) {
+    player* enemy_tmp = new player(enemy_name);
+  }
+
+  if (enemies == nullptr) {
+    enemies = new std::vector<player*>();
+    enemies->push_back(ladder[enemy_name]);
+  } else {
+    enemies->push_back(ladder[enemy_name]);
+  }
+
+  enmy_count += 1;
+}
+
+void player::print_enemies() {
+  if (enmy_count > 0) {
+    print_vector(enemies) 
+      std:: cout << (enemies->at(i))->print_member_name() << std::endl;
+  } else {
+    std::cout << "No enemy" << std::endl;
+  }
+}
+
+bool valid_enemies(std::string name, std::string name2) {
+  std::string newColor, currentColor;
+
+  if (ladder[name] == nullptr) {
+    std::cerr << "Error in valid_enemies" << std::endl;
+    exit(0);
+  } else if (ladder[name]->print_color() == "default") {
+    for ( auto person : *(ladder[name]->get_enemies()) ) {
+      if (person->print_color() != "default") {
+        newColor = person->print_color();      
+      }
+    }
+
+    if (newColor == "White") {
+      currentColor = "Black";
+    } else if (newColor == "Black") {
+      currentColor = "White";
+    } else {
+      currentColor = "White";
+      newColor = "Black";
+    }
+
+  } else if(ladder[name]->print_color() == "White") {
+    currentColor = "White";
+    newColor = "Black";
+  } else {
+    currentColor = "Black";
+    newColor = "White";
+  }
+  
+  for ( auto person : *(ladder[name]->get_enemies()) ) {
+    if (person->print_color() == currentColor)
+      return false;
+    else if (person->print_color() == "default")
+      person->set_color(newColor);
+    else 
+      continue;
+
+    if (person->print_enmy_count())
+      if (!valid_enemies(person->print_member_name(), name))
+        return false;
+  }
+
+  return true;
+}
 
 int main(int argc, char* argv[]) {
-	ui cases;
-	cin >> cases;
+  ui cases;
+  std::cin >> cases;
 
-	for (ui c=1; c<=cases; c++) {
-		map<string, ecb> groupA;
-		map<string, ecb> groupB;
-		map<string, string> pair;
+  for (ui c=1; c<=cases; c++) {
+    std::string answer = "Yes";
+    std::string name1, name2;
+    std::vector<std::string> league_members;
+    ladder.clear();
 
-		string name1, name2, line, answer= "Yes";
-		ui troublesome;
+    ui numNames;
+    std::cin >> numNames;
 
-		cin >> troublesome;
+    for (ui i=0; i<numNames; i++) {
+      std::cin >> name1 >> name2;
+      if (ladder[name1] == nullptr && ladder[name2] == nullptr) {
+        player* tmp = new player(name1);
+        league_members.push_back(name1);
+        league_members.push_back(name2);
+      } else if (ladder[name1] == nullptr) {
+        player* tmp = new player(name1);
+        league_members.push_back(name1);
+      } else if (ladder[name2] == nullptr) {
+        player* tmp = new player(name2);
+        league_members.push_back(name2);
+      }
 
-		for (ui trouble=0; trouble<troublesome; trouble++) {
-			cin >> name1;
-			cin >> name2;
+      ladder[name1]->add_enemy(name2);
+      ladder[name2]->add_enemy(name1);
+    }
 
-			//pair[name1] = name2;
-			//pair[name2] = name1;
+    // Checking if the division's valid
+    for (std::string name : league_members) { 
+      if ( !valid_enemies(name, "") ) {
+        answer = "No";
+      } 
+    }
 
-			if ((groupA[name1] == hold && groupA[name2] == hold) || 
-            (groupB[name1] == hold && groupB[name2] == hold)) {
-				answer = "No";
-			} else if (groupA[name1] != out && groupA[name2] != out) {
-        if (groupB[pair[name1]] == hold || groupB[pair[name2]] == hold) {
-//          cout << "Unable to swap" << endl;
-          answer = "No"; 
-        } else if (groupB[pair[name1]] == hold) {
-				  groupA[name1] = hold;
-				  groupB[name2] = hold;
-        } else {
-          groupA[name2] = hold;
-          groupB[name1] = hold;
-        }
-      } else if (groupB[name1] != out && groupB[name2] != out) {
-        if (groupA[pair[name1]] == hold || groupA[pair[name2]] == hold) {
-//          cout << "unable to swap" << endl;
-          answer = "No";
-        } else if (groupA[pair[name1]] == hold) {
-          groupA[name2] = hold;
-          groupB[name1] = hold;
-        } else {
-          groupA[name1] = hold;
-          groupB[name2] = hold;
-        }
-			} else if (groupA[name1] != out) {
-				groupA[name1] = hold;
-				groupB[name2] = hold;
-			} else if (groupB[name1] != out) {
-				groupB[name1] = hold;
-				groupA[name2] = hold;
-			} else if (groupA[name2] != out) {
-				groupA[name2] = hold;
-				groupB[name1] = hold;
-			} else if (groupB[name2] != out) {
-				groupB[name2] = hold;
-				groupA[name1] = hold;
-			} else {
-				groupA[name1] = in;
-				groupB[name2] = in;
-			}
+/*
+    for (std::string name : league_members) {
+      std::cout << "Name: " << name << 
+          " Color: " << ladder[name]->print_color() << std::endl;
+      for ( auto play : *(ladder[name]->get_enemies()) ) {
+        print(play);
+      }
+      std::cout << std::endl;
+    }
+*/
 
-      pair[name1] = name2;
-      pair[name2] = name1;
+    std::printf("Case #%d: %s\n", c, answer.c_str());
+  } 
 
-			while (answer == "No" && trouble<troublesome) {
-				getline(cin, line);
-				trouble += 1;
-			}
-		}
-
-//		cout << groupA[Dead_Bowie] << endl;
-
-		stdoutans(c, answer.c_str());
-	}
-
-	return 0;
+  return 0;
 }
