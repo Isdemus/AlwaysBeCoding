@@ -14,7 +14,8 @@ typedef unsigned int ui;
 // Assuming that no same enemy_name will be given
 void player::add_enemy(std::string enemy_name) {
   if (ladder[enemy_name] == nullptr) {
-    player* enemy_tmp = new player(enemy_name);
+//    player* enemy_tmp = new player(enemy_name);
+    new player(enemy_name);
   }
 
   if (enemies == nullptr) {
@@ -98,14 +99,14 @@ int main(int argc, char* argv[]) {
     for (ui i=0; i<numNames; i++) {
       std::cin >> name1 >> name2;
       if (ladder[name1] == nullptr && ladder[name2] == nullptr) {
-        player* tmp = new player(name1);
+        new player(name1);
         league_members.push_back(name1);
         league_members.push_back(name2);
       } else if (ladder[name1] == nullptr) {
-        player* tmp = new player(name1);
+        new player(name1);
         league_members.push_back(name1);
       } else if (ladder[name2] == nullptr) {
-        player* tmp = new player(name2);
+        new player(name2);
         league_members.push_back(name2);
       }
 
