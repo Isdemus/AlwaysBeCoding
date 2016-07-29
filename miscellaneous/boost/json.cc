@@ -27,7 +27,16 @@ int main(int argc, char* argv[]) {
 
   ptree pt;
   read_json(ss, pt);
-  write_json(cout, pt);
+
+  if (pt.get<string>("status") == "OK") {
+    cout << "success" << endl;
+  }
+
+  cout << pt.get<string>("results..geometry.location.lat") << endl;
+  cout << pt.get<string>("results..geometry.location.lng") << endl;
+
+  string l = pt.get<string>("results..geometry.location.lat");
+  int lat = static_cast<int>(l);
 
   return 0;
 }
