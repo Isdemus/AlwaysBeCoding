@@ -7,4 +7,4 @@ Practice resources are from:
 3. Project Euler (https://projecteuler.net/)
 4. Miscellaneous: simple codes for fun/experiment/testing
 5. randomProblem: unorganized random algorithm problems
-
+6. International Olympiad in Informatics (http://www.ioinformatics.org/index.shtml)
