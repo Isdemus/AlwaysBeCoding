@@ -9,7 +9,7 @@ export PATH
 
 # Custonm Variables
 result=""
-userna="\/Users\/isdemus"
+userna="\/Users\/$(whoami)"
 usernb=$(echo ${userna} | sed 's/\\//g')
 hidden="${usernb}/.dirs"
 
@@ -43,7 +43,21 @@ function save() {
 		result=""
 	else
 		echo "Saving $1 directory"
-		echo $1 $(pwd)>> ~/.dirs
+		echo $1 $(pwd) >> ${hidden}
+	fi
+}
+
+# A function that deletes a directory saved previously
+function delete() {
+	finddir $1
+	local resbool=$(echo $result | wc -w)
+
+	if [ ${resbool} -gt 0 ]
+	then
+		echo "Deleting the directory"
+		sed -i -e "/^$1 .*/d" ${hidden}
+	else
+		echo "The directory $1 is not in the list"
 	fi
 }
 
