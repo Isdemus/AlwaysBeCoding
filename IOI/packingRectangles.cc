@@ -132,8 +132,13 @@ int main(int argc, char* argv[]) {
 			if (min_area % length[rec] == 0)
 				try_buffer.push(make_pair(rec, length[rec]));
 		} 
-
+		
+		unsigned int length_copy[NUMREC + 1], height_copy[NUMREC + 1];
 		while (!try_buffer.empty()) {
+			for (int i = 0; i < NUMREC; i++) {
+				length_copy[i] = length[i];
+				height_copy[i] = height[i];
+			}
 			auto core = try_buffer.front();
 			try_buffer.pop();
 
@@ -141,14 +146,14 @@ int main(int argc, char* argv[]) {
 			int blength = core.second;
 			int bheight = min_area / blength;
 
-			if (length[index] == blength) {
-				bheight -= height[index];
+			if (length_copy[index] == blength) {
+				bheight -= height_copy[index];
 			} else {
-				bheight -= length[index];
+				bheight -= length_copy[index];
 			}
-			SetZero(length, height, index);
+			SetZero(length_copy, height_copy, index);
 			cout << "blength : " << blength << " & bheight : " << bheight << endl;
-			if (Try_and_verify(length, height, blength, bheight) == SUCCESS) {
+			if (Try_and_verify(length_copy, height_copy, blength, bheight) == SUCCESS) {
 				answer_queue.push(make_pair(blength, bheight));
 			}
 		}
