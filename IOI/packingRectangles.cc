@@ -6,6 +6,7 @@
 #include <iostream>
 #include <queue>
 #include <list>
+#include <unordered_map>
 
 #include <cassert>
 
@@ -18,8 +19,8 @@
 using namespace std;
 
 void SetZero(unsigned int length[], unsigned int height[], int index) {
-	length[index] = -1;
-	height[index] = -1;
+	length[index] = 0;
+	height[index] = 0;
 }
 
 template<typename T>
@@ -29,24 +30,17 @@ void Swap(T &first, T &second) {
 	first = first ^ second;
 }
 
-#if 0
-void Swap(int &blength, int &bheight) {
-	blength = blength ^ bheight;
-	bheight = blength ^ bheight;
-	blength = blength ^ bheight;
-}
-#endif
-
 /*
  * A boolean function that will return either SUCCESS/FAIL representing all the four rectangles
  * can be packed and enclosed by the biggest rectangle with blength and bheight
  */
-int Try_and_verify(unsigned int length[], unsigned int height[], int &blength, int &bheight) {
+int Try_and_verify(unsigned int length[], unsigned int height[], int blength, int bheight) {
 	// Check if any rectangle has higher length side than blength/bheight (easy things to do first)
 	// i.e., the rectangle will not be fit, so return FAIL
 	for (int rec = 0; rec < NUMREC; rec++) {
 		if ((length[rec] > blength && length[rec] > bheight) ||
-				(height[rec] > blength && height[rec] > bheight)) {
+				(height[rec] > blength && height[rec] > bheight) ||
+				(length[rec] > blength)) {
 			return FAIL;
 		}
 	}
@@ -70,7 +64,6 @@ int Try_and_verify(unsigned int length[], unsigned int height[], int &blength, i
 	for (int rec = 0; rec < NUMREC; rec++) {
 		if (height[rec] <= 0) continue;
 		if (height[rec] > blength && bheight > height[rec]) { // The rectangle has to be stacked 
-//			if (bheight < length[rec]) return FAIL;
 			if (length[rec] < blength)
 				extra_spaces.push_back(make_pair(blength - length[rec], height[rec]));
 			bheight -= height[rec];
@@ -82,6 +75,15 @@ int Try_and_verify(unsigned int length[], unsigned int height[], int &blength, i
 	// The rest should be able to be fit into the extra_space elements
 	for (int rec = 0; rec < NUMREC; rec++) {
 		if (length[rec] <= 0) continue; // Already used rectangle
+		// If there is still free space in the biggest rectangle,
+		// there are two choices, but it chooses only one to simplify the problem
+		if (bheight > 0) {
+			bheight -= height[rec];
+			extra_spaces.push_back(make_pair(blength - length[rec], height[rec]));
+			SetZero(length, height, rec);
+			if (blength > bheight) Swap(blength, bheight);
+			continue;
+		}
 		for (auto space : extra_spaces) {
 			if ((space.first >= length[rec]) && (space.second >= height[rec])) {
 				space.first = space.first - length[rec];
@@ -101,7 +103,7 @@ int Try_and_verify(unsigned int length[], unsigned int height[], int &blength, i
 }
 
 int main(int argc, char* argv[]) {
-	unsigned int length[NUMREC + 1], height[NUMREC + 1], area;
+	unsigned int length[NUMREC], height[NUMREC], area;
 	unsigned int min_area, max_side, max_index; 
 
 	for (int rec = 0; rec < NUMREC; rec++) {
@@ -120,10 +122,9 @@ int main(int argc, char* argv[]) {
 	// A queue that will be used to store every candidate to attempt
 	queue<pair<int, unsigned int>> try_buffer;
 	queue<pair<unsigned int, unsigned int>> answer_queue;
+	unordered_map<unsigned int, unsigned int> try_board;
 
 	for (;;) {
-		cout << "Current min area : " << min_area << endl;
-		if (min_area > 40) break;
 		assert(try_buffer.empty()); // Abort if not tried all
 
 		for (int rec = 0; rec < NUMREC; rec++) {
@@ -133,7 +134,7 @@ int main(int argc, char* argv[]) {
 				try_buffer.push(make_pair(rec, length[rec]));
 		} 
 		
-		unsigned int length_copy[NUMREC + 1], height_copy[NUMREC + 1];
+		unsigned int length_copy[NUMREC], height_copy[NUMREC];
 		while (!try_buffer.empty()) {
 			for (int i = 0; i < NUMREC; i++) {
 				length_copy[i] = length[i];
@@ -146,15 +147,20 @@ int main(int argc, char* argv[]) {
 			int blength = core.second;
 			int bheight = min_area / blength;
 
+			// When this set <blength, bheight> has been tried before, skip the process.
+			if (try_board[blength] == bheight) continue;
+			try_board[blength] = bheight;
+
 			if (length_copy[index] == blength) {
 				bheight -= height_copy[index];
 			} else {
 				bheight -= length_copy[index];
 			}
+
+			// Setting zeros to the used rectangle's length and height, proceed to call Try_and_verify()
 			SetZero(length_copy, height_copy, index);
-			cout << "blength : " << blength << " & bheight : " << bheight << endl;
 			if (Try_and_verify(length_copy, height_copy, blength, bheight) == SUCCESS) {
-				answer_queue.push(make_pair(blength, bheight));
+				answer_queue.push(make_pair(core.second, min_area / core.second));
 			}
 		}
 
@@ -172,10 +178,7 @@ int main(int argc, char* argv[]) {
 	// Printing out every possible length and height of the enclosing rectangle
 	while (!answer_queue.empty()) {
 		auto answer = answer_queue.front();
-		cout << answer.first 
-				<< " "
-				<< answer.second 
-				<< endl;
+		printf("%u %u\n", answer.first, answer.second);
 		answer_queue.pop();
 	}
 
